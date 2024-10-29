@@ -3,8 +3,22 @@
 
 let
   nurpkgs = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {};
+  starship-config = builtins.readFile ./starship.toml;
 in
 {
+
+  nix = {
+    package = pkgs.nix;
+    extraOptions = ''
+    experimental-features = nix-command flakes
+    '';
+  };
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball
+    "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+  };
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "htnk";
@@ -31,7 +45,6 @@ in
     # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
     fd
     ripgrep
-
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
     # # environment:
@@ -95,6 +108,7 @@ in
     starship = {
       enable = true;
       enableBashIntegration = true;
+      settings = builtins.fromTOML starship-config;
     };
   };
 

@@ -19,6 +19,7 @@ in
       inherit pkgs;
     };
   };
+  nixpkgs.config.allowUnfree = true;
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "htnk";
@@ -45,6 +46,10 @@ in
     # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
     fd
     ripgrep
+    xwayland
+    xwayland-satellite
+    discord
+    vym
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
     # # environment:
@@ -86,6 +91,7 @@ in
   #
   home.sessionVariables = {
     EDITOR = "hx";
+    DISPLAY = ":0";
   };
 
   programs = {
@@ -104,11 +110,22 @@ in
     };
     bash = {
       enable = true;
+      shellAliases = import ./aliases.nix;
     };
     starship = {
       enable = true;
       enableBashIntegration = true;
       settings = builtins.fromTOML starship-config;
+    };
+    wezterm = {
+      enable = true;
+      extraConfig = builtins.readFile ./wezterm.lua;
+      enableBashIntegration = true;
+      # package = pkgs.hello;
+    };
+    zed-editor = {
+      enable = true;
+      userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
     };
   };
 
